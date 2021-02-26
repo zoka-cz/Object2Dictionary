@@ -8,6 +8,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Serializer which will convert any object as Key-Value pairs.</Description>
     <PackageProjectUrl>https://github.com/zoka-cz/Object2Dictionary</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/zoka-cz/Object2Dictionary</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <FileVersion>0.9.0.0</FileVersion>
+    <Version>0.9.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
