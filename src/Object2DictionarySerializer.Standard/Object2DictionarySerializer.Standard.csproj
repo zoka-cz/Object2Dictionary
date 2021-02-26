@@ -5,6 +5,9 @@
     <AssemblyName>Zoka.Object2Dictionary.Serializer</AssemblyName>
     <Authors>Michal Linhart</Authors>
     <Company>Zoka</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Serializer which will convert any object as Key-Value pairs.</Description>
+    <PackageProjectUrl>https://github.com/zoka-cz/Object2Dictionary</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
