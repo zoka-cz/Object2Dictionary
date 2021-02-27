@@ -25,11 +25,30 @@ namespace Zoka.Object2Dictionary.Serializer
 			return dictionary;
 		}
 
+		/// <summary>Will serialize the object into the string key-value dictionary including all underlaying objects</summary>
+		public static Dictionary<string, string>			Serialize(object _object)
+		{
+			var dictionary = new Dictionary<string, string>();
+			var serializer = new Object2DictionarySerializer();
+			serializer.GetValuesFromComplexTypeIntoDictionary(dictionary, _object, "");
+			return dictionary;
+		}
+
 		/// <summary>Will deserialize the dictionary string key-value pairs into the object</summary>
 		public static T										Deserialize<T>(Dictionary<string, string> _dictionary) where T : class, new()
 		{
 			var serializer = new Object2DictionarySerializer();
 			var obj = new T();
+			serializer.SetValuesFromDictionaryIntoComplexType(_dictionary, obj, "");
+			return obj;
+		}
+
+		/// <summary>Will deserialize the dictionary string key-value pairs into the object of _target_type type.</summary>
+		public static object								Deserialize(Type _target_type, Dictionary<string, string> _dictionary)
+		{
+			var serializer = new Object2DictionarySerializer();
+			
+			var obj = System.Activator.CreateInstance(_target_type);
 			serializer.SetValuesFromDictionaryIntoComplexType(_dictionary, obj, "");
 			return obj;
 		}
