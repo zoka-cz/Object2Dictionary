@@ -24,6 +24,11 @@ namespace Object2DictionarySerializer.Tests
 			public List<B> T { get; set; }
 		}
 
+		public class Tp
+		{
+			public Type TpX { get; set; }
+		}
+
 
 		[TestMethod]
 		public void											SerializeWorks()
@@ -98,6 +103,18 @@ namespace Object2DictionarySerializer.Tests
 			Assert.AreEqual("DefaultValueX", obj.T[1].X);
 			Assert.AreEqual(TimeSpan.FromMinutes(77), obj.T[1].Y);
 			Assert.IsNull(obj.T[1].Z);
+		}
+
+		[TestMethod]
+		public void											SupportsTypeSerialization()
+		{
+			var t = new Tp() { TpX = typeof(Object2DictionarySerializerTests) };
+
+			var dict = Zoka.Object2Dictionary.Serializer.Object2DictionarySerializer.Serialize(t);
+
+			var t1 = Zoka.Object2Dictionary.Serializer.Object2DictionarySerializer.Deserialize(typeof(Tp), dict) as Tp;
+
+			Assert.AreEqual(t.TpX, t1.TpX);
 		}
 
 	}

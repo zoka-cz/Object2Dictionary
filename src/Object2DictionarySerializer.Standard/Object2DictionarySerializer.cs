@@ -126,6 +126,11 @@ namespace Zoka.Object2Dictionary.Serializer
 					if (inst != null)
 						GetValuesFromComplexTypeIntoDictionary(_settings_dictionary, inst, $"{_dictionary_prefix}{property.Name}.");
 				}
+				else if (property.PropertyType == typeof(Type))
+				{
+					var val = property.GetValue(_from_object, null) as Type;
+					_settings_dictionary.Add($"{_dictionary_prefix}{property.Name}", val.AssemblyQualifiedName);
+				}
 			}
 
 		}
@@ -268,6 +273,18 @@ namespace Zoka.Object2Dictionary.Serializer
 					var inst = Activator.CreateInstance(property.PropertyType);
 					property.SetValue(_target_object, inst, null);
 					SetValuesFromDictionaryIntoComplexType(_settings_dictionary, inst, property.Name + ".");
+				}
+				else if (property.PropertyType == typeof(Type))
+				{
+					if (_settings_dictionary.Keys.Contains(_dictionary_prefix + property.Name))
+					{
+						var type = Type.GetType(_settings_dictionary[_dictionary_prefix + property.Name]);
+						property.SetValue(_target_object, type);
+					}
+					else
+					{
+						property.SetValue(_target_object, (Type)null);
+					}
 				}
 				else
 					throw new NotSupportedException("Not supportted property type");
