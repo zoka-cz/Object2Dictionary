@@ -129,7 +129,7 @@ namespace Zoka.Object2Dictionary.Serializer
 				else if (property.PropertyType == typeof(Type))
 				{
 					var val = property.GetValue(_from_object, null) as Type;
-					_settings_dictionary.Add($"{_dictionary_prefix}{property.Name}", val.AssemblyQualifiedName);
+					_settings_dictionary.Add($"{_dictionary_prefix}{property.Name}", val?.AssemblyQualifiedName);
 				}
 			}
 
