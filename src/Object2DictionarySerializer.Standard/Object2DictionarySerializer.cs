@@ -278,7 +278,10 @@ namespace Zoka.Object2Dictionary.Serializer
 				{
 					if (_settings_dictionary.Keys.Contains(_dictionary_prefix + property.Name))
 					{
-						var type = Type.GetType(_settings_dictionary[_dictionary_prefix + property.Name]);
+						var typename = _settings_dictionary[_dictionary_prefix + property.Name];
+						Type type = null;
+						if (typename != null)
+							type = Type.GetType(typename);
 						property.SetValue(_target_object, type);
 					}
 					else
