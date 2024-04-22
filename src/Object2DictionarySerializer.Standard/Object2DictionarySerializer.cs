@@ -188,6 +188,7 @@ namespace Zoka.Object2Dictionary.Serializer
 			_list_type = null;
 			return false;
 		}
+
 		private void SetValuesFromDictionaryIntoListType(Dictionary<string, string> _settings_dictionary, object _list, string _dictionary_prefix)
 		{
 			Type list_type, item_type, sublist_type, sublist_item_type;
@@ -247,50 +248,61 @@ namespace Zoka.Object2Dictionary.Serializer
 			{
 				Type list_type, item_type;
 
-				if (IsValueType(property.PropertyType) || Nullable.GetUnderlyingType(property.PropertyType) != null)
+				if (!property.CanWrite)
+					continue;
+
+				try
 				{
-					if (_settings_dictionary.Keys.Contains(_dictionary_prefix + property.Name))
+					if (IsValueType(property.PropertyType) || Nullable.GetUnderlyingType(property.PropertyType) != null)
 					{
-						SetPropertyValueType(property, _target_object, _settings_dictionary[_dictionary_prefix + property.Name]);
-					}
-					else
-					{
-						var default_val_attr = property.GetCustomAttributes(typeof(DictionaryDefaultValueAttribute), false).Cast<DictionaryDefaultValueAttribute>();
-						if (default_val_attr != null && default_val_attr.Any() && default_val_attr.First().DefaultValue != null)
+						if (_settings_dictionary.Keys.Contains(_dictionary_prefix + property.Name))
 						{
-							SetPropertyValueType(property, _target_object, default_val_attr.First().DefaultValue);
+							SetPropertyValueType(property, _target_object, _settings_dictionary[_dictionary_prefix + property.Name]);
+						}
+						else
+						{
+							var default_val_attr = property.GetCustomAttributes(typeof(DictionaryDefaultValueAttribute), false).Cast<DictionaryDefaultValueAttribute>();
+							if (default_val_attr != null && default_val_attr.Any() && default_val_attr.First().DefaultValue != null)
+							{
+								SetPropertyValueType(property, _target_object, default_val_attr.First().DefaultValue);
+							}
 						}
 					}
-				}
-				else if (IsListType(property.PropertyType, out list_type, out item_type)) // may be list
-				{
-					var list = Activator.CreateInstance(list_type);
-					property.SetValue(_target_object, list, null);
-					SetValuesFromDictionaryIntoListType(_settings_dictionary, list, _dictionary_prefix + property.Name);
-				}
-				else if (IsComplexType(property.PropertyType))
-				{
-					var inst = Activator.CreateInstance(property.PropertyType);
-					property.SetValue(_target_object, inst, null);
-					SetValuesFromDictionaryIntoComplexType(_settings_dictionary, inst, property.Name + ".");
-				}
-				else if (property.PropertyType == typeof(Type))
-				{
-					if (_settings_dictionary.Keys.Contains(_dictionary_prefix + property.Name))
+					else if (IsListType(property.PropertyType, out list_type, out item_type)) // may be list
 					{
-						var typename = _settings_dictionary[_dictionary_prefix + property.Name];
-						Type type = null;
-						if (typename != null)
-							type = Type.GetType(typename);
-						property.SetValue(_target_object, type);
+						var list = Activator.CreateInstance(list_type);
+						property.SetValue(_target_object, list, null);
+						SetValuesFromDictionaryIntoListType(_settings_dictionary, list, _dictionary_prefix + property.Name);
+					}
+					else if (IsComplexType(property.PropertyType))
+					{
+						var inst = Activator.CreateInstance(property.PropertyType);
+						property.SetValue(_target_object, inst, null);
+						SetValuesFromDictionaryIntoComplexType(_settings_dictionary, inst, _dictionary_prefix + property.Name + ".");
+					}
+					else if (property.PropertyType == typeof(Type))
+					{
+						if (_settings_dictionary.Keys.Contains(_dictionary_prefix + property.Name))
+						{
+							var typename = _settings_dictionary[_dictionary_prefix + property.Name];
+							Type type = null;
+							if (typename != null)
+								type = Type.GetType(typename);
+							property.SetValue(_target_object, type);
+						}
+						else
+						{
+							property.SetValue(_target_object, (Type)null);
+						}
 					}
 					else
-					{
-						property.SetValue(_target_object, (Type)null);
-					}
+						throw new NotSupportedException("Not supportted property type");
 				}
-				else
-					throw new NotSupportedException("Not supportted property type");
+				catch (Exception ex)
+				{
+					ex.Data.Add($"property_name_{Guid.NewGuid()}", property.Name);
+					throw ex;
+				}
 			}
 
 		}
